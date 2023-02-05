@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const passport = require("../config/passport");
 
 router.get("/signin",(req,res,next)=>{
+    console.log("In first signin");
     res.render(path.join(__dirname,"..","views","signin"));
 })
 
@@ -14,6 +15,14 @@ router.post("/signin",passport.authenticate("local",{failureRedirect:"/auth/logi
     // console.log(req.isAuthenticated());
     res.redirect("/");
 })
+
+router.use("/google/redirect",passport.authenticate("google",{failureRedirect:"/fail"}),(req,res,next)=>{
+    console.log("Here");
+    res.redirect("/");
+})
+
+router.get("/google",passport.authenticate("google",{scope:["profile","email"]}));
+
 
 router.get("/signup",(req,res,next)=>{
     res.render(path.join(__dirname,"..","views","signup"));
@@ -36,7 +45,8 @@ router.post("/signup",(req,res,next)=>{
             .then(hashedPassword=>{
                 return User.create({
                     email,
-                    password:hashedPassword
+                    password:hashedPassword,
+                    strategy:"LOCAL"
                 })
             })
             .then(user=>{
@@ -52,6 +62,42 @@ router.post("/signup",(req,res,next)=>{
         console.log(err);
         
     })
+});
+
+router.get("/logout",(req,res,next)=>{
+    req.logout({keepSessionInfo:false},(done)=>{
+        res.redirect("/auth/signin");
+    })
 })
+
+router.post("/reset-password",(req,res,next)=>{
+    const {password,confirmPassword} = req.body;
+    if(password !== confirmPassword){
+        return res.redirect("back");
+    }
+    console.log(req.user);
+    if(req.user.strategy!=="GOOGLE"){
+        // req.user.pa
+        bcrypt.hash(password,12)
+            .then(hashedPass=>{
+                req.user.password = hashedPass;
+                req.user.save()
+                .then(result=>{
+                    console.log('result',result);
+                    res.redirect("back");
+                })
+                .catch(err=>{
+                    console.log(err);
+                })
+            })
+            .catch(err=>{
+                console.log(err);
+            })
+    } else {
+        res.redirect("back");
+    }
+})
+
+
 
 module.exports = router;

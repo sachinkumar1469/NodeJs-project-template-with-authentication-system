@@ -93,7 +93,7 @@
     flex-direction: column;
     gap: 11px;
 }
-.login .form .third__party div {
+.login .form .third__party a {
     height: 2.5rem;
     border: 1px solid black;
     display: flex;
@@ -103,10 +103,10 @@
     justify-content: space-between;
     cursor: pointer;
 }
-.login .form .third__party div svg {
+.login .form .third__party a svg {
     font-size: 1.8rem;
 }
-.login .form .third__party div span {
+.login .form .third__party a span {
     flex: 1;
     padding-inline: 8px;
     display: flex;

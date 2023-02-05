@@ -7,7 +7,7 @@ const MongoDBStore = require("connect-mongodb-session")(expressSession);
 const passport = require("./config/passport");
 
 const store = new MongoDBStore({
-    uri:'mongodb+srv://sachinyadav1469:Sachin%40123@cluster0.my3twen.mongodb.net/placement-cell?retryWrites=true&w=majority',
+    uri:'mongodb+srv://sachinyadav1469:Sachin%40123@cluster0.my3twen.mongodb.net/auth?retryWrites=true&w=majority',
     collection:'authStore'
 })
 
@@ -45,8 +45,11 @@ app.use(passport.session());
 
 app.use("/auth",require('./routes/auth'));
 
+app.use("/fail",(req,res,next)=>{
+    res.send("Fail");
+})
+
 app.use("/",(req,res,next)=>{
-    res.send("Home Page");  
-    // console.log(req.user);
+    res.render(require("path").join(__dirname,"views","home"));
 })
 
